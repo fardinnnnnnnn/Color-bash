@@ -2,110 +2,93 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    touch-action: none;
+    user-select: none;
 }
 
 html, body {
     width: 100%;
     height: 100%;
-    overflow: hidden;
     background: #000;
+    overflow: hidden;
     font-family: Arial, sans-serif;
 }
 
-/* MENU */
 #menu {
-    width: 100vw;
-    height: 100vh;
-    background: #1a1a1a;
-    color: #fff;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #111, #222);
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    color: white;
+    animation: fadeIn 0.6s ease;
 }
 
-#gameTitle {
-    font-size: 60px;
-    color: #ff4d4d;
-    margin-bottom: 40px;
-    text-shadow: 2px 2px #000;
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+#menu h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
 }
 
 #menu button {
-    padding: 15px 50px;
-    font-size: 22px;
-    margin: 10px;
+    margin-top: 10px;
+    padding: 12px 30px;
+    font-size: 18px;
     border: none;
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
-#startBtn {
-    background: #ff4d4d;
-    color: #fff;
-}
-
-#soundBtn {
-    background: #4da6ff;
-    color: #fff;
-}
-
-.scoreBox {
-    margin-top: 30px;
-    font-size: 20px;
-    text-align: center;
-}
-
-/* GAME AREA */
 #game {
-    display: none;
-    position: relative;
-    width: 100vw;
-    height: 100vh;
+    position: fixed;
+    inset: 0;
     background: #222;
+    display: none;
     overflow: hidden;
 }
 
-/* HUD */
-#hud {
-    position: absolute;
-    top: 10px;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    color: #fff;
-    z-index: 10;
-}
-
-#pauseBtn {
-    padding: 5px 15px;
-}
-
-/* PLAYER */
 #player {
     position: absolute;
     bottom: 20px;
-    left: 175px;
+    left: 50%;
     width: 50px;
     height: 50px;
     background: red;
-    border-radius: 50%;
+    border-radius: 8px;
+    transform: translateX(-50%);
 }
 
-/* BLOCKS */
 .block {
     position: absolute;
-    width: 50px;
-    height: 50px;
-    background: #555;
+    width: 40px;
+    height: 40px;
+    background: #ff4d4d;
 }
 
-/* COINS */
 .coin {
     position: absolute;
     width: 20px;
     height: 20px;
     background: gold;
     border-radius: 50%;
+}
+
+#hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    z-index: 10;
+}
+
+#pauseBtn {
+    padding: 5px 12px;
 }
