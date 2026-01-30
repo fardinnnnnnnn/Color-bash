@@ -11,15 +11,10 @@ const scoreText = document.getElementById("scoreText");
 const levelText = document.getElementById("levelText");
 const pauseBtn = document.getElementById("pauseBtn");
 
-/* ---------- Helpers ---------- */
-function gameWidth() {
-    return game.getBoundingClientRect().width;
-}
-function gameHeight() {
-    return game.getBoundingClientRect().height;
-}
+// Click sound
+const clickSound = new Audio("click.mp3");
 
-/* ---------- Popup ---------- */
+// Level Up / Game Over popup
 const popup = document.createElement("div");
 popup.style.position = "absolute";
 popup.style.top = "50%";
@@ -28,79 +23,76 @@ popup.style.transform = "translate(-50%, -50%)";
 popup.style.padding = "30px 50px";
 popup.style.background = "rgba(255,77,77,0.9)";
 popup.style.color = "#fff";
-popup.style.fontSize = "36px";
+popup.style.fontSize = "40px";
+popup.style.fontWeight = "bold";
 popup.style.borderRadius = "15px";
+popup.style.textAlign = "center";
 popup.style.display = "none";
 popup.style.zIndex = "1000";
-popup.style.textAlign = "center";
 game.appendChild(popup);
 
 let obstacles = [];
 let coins = [];
 
+let gameInterval, obstacleInterval, coinInterval, levelInterval;
 let running = false;
 let paused = false;
+
 let score = 0;
 let level = 1;
 let speed = 2;
 
-let gameInterval, obstacleInterval, coinInterval, levelInterval;
-
-/* ---------- Sound ---------- */
-let soundOn = localStorage.getItem("soundOn") !== "false";
-updateSoundBtn();
+// Sound
+let soundOn = true;
+const savedSound = localStorage.getItem("soundOn");
+if (savedSound !== null) soundOn = savedSound === "true";
+updateSoundButton();
 
 soundBtn.onclick = () => {
     soundOn = !soundOn;
     localStorage.setItem("soundOn", soundOn);
-    updateSoundBtn();
+    updateSoundButton();
 };
 
-function updateSoundBtn() {
-    soundBtn.innerText = soundOn ? "Sound: ON" : "Sound: OFF";
+function updateSoundButton() {
+    if (soundBtn) {
+        soundBtn.innerText = soundOn ? "Sound: ON" : "Sound: OFF";
+    }
 }
 
-function playSound(freq, dur) {
-    if (!soundOn) return;
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    osc.frequency.value = freq;
-    osc.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + dur);
-}
-
-/* ---------- Scores ---------- */
+// Load scores
 function loadScores() {
-    recentScoreText.innerText = "Last Score: " + (localStorage.getItem("recentScore") || 0);
-    highScoreText.innerText = "High Score: " + (localStorage.getItem("highScore") || 0);
+    const high = localStorage.getItem("highScore") || 0;
+    const recent = localStorage.getItem("recentScore") || 0;
+    highScoreText.innerText = "High Score: " + high;
+    recentScoreText.innerText = "Last Score: " + recent;
 }
 loadScores();
 
-/* ---------- Start ---------- */
+// Start button (ONLY CHANGE HERE: click sound added)
 startBtn.onclick = () => {
+    playClickSound();   // <-- click sound here
     menu.style.display = "none";
     game.style.display = "block";
     startGame();
-    playSound(800, 0.1);
 };
 
+
+// Pause / Resume
 pauseBtn.onclick = () => {
+    if (!running) return;
     paused = !paused;
     pauseBtn.innerText = paused ? "Resume" : "Pause";
 };
 
-/* ---------- Game ---------- */
+// Start game
 function startGame() {
     clearAll();
-    score = 0;
-    level = 1;
-    speed = 2;
-    running = true;
-    paused = false;
+    score = 0; level = 1; speed = 2;
+    running = true; paused = false;
+    player.style.left = "175px";
+    game.style.background = "#222";
     updateUI();
-
-    player.style.left = gameWidth() / 2 - 25 + "px";
 
     gameInterval = setInterval(gameLoop, 20);
     obstacleInterval = setInterval(createObstacle, 1500);
@@ -108,124 +100,44 @@ function startGame() {
     levelInterval = setInterval(levelUp, 20000);
 }
 
+// Level up
 function levelUp() {
+    if (!running) return;
     level++;
     speed += 0.5;
-    game.style.background = `hsl(${Math.random()*360},40%,20%)`;
-    showPopup("Level " + level);
+
+    const r = Math.floor(Math.random() * 200 + 30);
+    const g = Math.floor(Math.random() * 200 + 30);
+    const b = Math.floor(Math.random() * 200 + 30);
+    game.style.background = `rgb(${r},${g},${b})`;
+
+    showPopup(`Level ${level}`);
+    playSound(600, 0.2);
+
     updateUI();
 }
 
-function endGame() {
-    running = false;
-    clearAll();
-
-    localStorage.setItem("recentScore", score);
-    const high = localStorage.getItem("highScore") || 0;
-    if (score > high) localStorage.setItem("highScore", score);
-
-    showPopup("Game Over\nScore: " + score, true);
-}
-
+// Update UI
 function updateUI() {
     scoreText.innerText = "Score: " + score;
     levelText.innerText = "Level: " + level;
 }
 
-/* ---------- Objects ---------- */
-function createObstacle() {
-    if (!running || paused) return;
-    const b = document.createElement("div");
-    b.className = "block";
-    b.style.left = Math.random() * (gameWidth() - 40) + "px";
-    b.style.top = "-40px";
-    game.appendChild(b);
-    obstacles.push(b);
+// Game over
+function endGame() {
+    running = false; paused = false;
+    clearAll();
+
+    localStorage.setItem("recentScore", score);
+    const high = localStorage.getItem("highScore") || 0;
+    if (score > high) localStorage.setItem("highScore", score);
+    loadScores();
+
+    showPopup(`Game Over!\nScore: ${score}`, true);
+    playSound(200, 0.5);
 }
 
-function createCoin() {
-    if (!running || paused) return;
-    const c = document.createElement("div");
-    c.className = "coin";
-    c.style.left = Math.random() * (gameWidth() - 20) + "px";
-    c.style.top = "-20px";
-    game.appendChild(c);
-    coins.push(c);
-}
-
-/* ---------- Loop ---------- */
-function gameLoop() {
-    if (!running || paused) return;
-
-    obstacles.forEach((o, i) => {
-        o.style.top = o.offsetTop + speed + "px";
-        if (collision(o)) endGame();
-        if (o.offsetTop > gameHeight()) {
-            o.remove();
-            obstacles.splice(i, 1);
-        }
-    });
-
-    coins.forEach((c, i) => {
-        c.style.top = c.offsetTop + speed + "px";
-        if (collision(c)) {
-            score += 5;
-            playSound(1000, 0.05);
-            updateUI();
-            c.remove();
-            coins.splice(i, 1);
-        } else if (c.offsetTop > gameHeight()) {
-            score -= level * 3;
-            updateUI();
-            c.remove();
-            coins.splice(i, 1);
-            if (score < 0) endGame();
-        }
-    });
-}
-
-function collision(obj) {
-    const p = player.getBoundingClientRect();
-    const o = obj.getBoundingClientRect();
-    return !(p.right < o.left || p.left > o.right || p.bottom < o.top || p.top > o.bottom);
-}
-
-/* ---------- Controls ---------- */
-document.addEventListener("keydown", e => {
-    if (!running || paused) return;
-    let x = player.offsetLeft;
-    if (e.key === "ArrowLeft") x -= 25;
-    if (e.key === "ArrowRight") x += 25;
-    x = Math.max(0, Math.min(gameWidth() - 50, x));
-    player.style.left = x + "px";
-});
-
-let touchX = 0;
-document.addEventListener("touchstart", e => touchX = e.touches[0].clientX);
-document.addEventListener("touchmove", e => {
-    if (!running || paused) return;
-    let dx = e.touches[0].clientX - touchX;
-    player.style.left = Math.max(0, Math.min(gameWidth() - 50, player.offsetLeft + dx)) + "px";
-    touchX = e.touches[0].clientX;
-});
-
-/* ---------- Popup ---------- */
-function showPopup(text, end=false) {
-    popup.innerText = text;
-    popup.style.display = "block";
-    setTimeout(() => {
-        popup.style.display = "none";
-        if (end) {
-            game.style.display = "none";
-            menu.style.display = "flex";
-            menu.style.animation = "none";
-            menu.offsetHeight;
-            menu.style.animation = "fadeIn 0.6s ease";
-            loadScores();
-        }
-    }, 2000);
-}
-
+// Clear all
 function clearAll() {
     clearInterval(gameInterval);
     clearInterval(obstacleInterval);
@@ -235,4 +147,182 @@ function clearAll() {
     coins.forEach(c => c.remove());
     obstacles = [];
     coins = [];
+}
+
+// Player movement keys
+document.addEventListener("keydown", e => {
+    if (!running || paused) return;
+    let left = parseFloat(player.style.left);
+    if (e.key === "ArrowLeft") left -= 20;
+    if (e.key === "ArrowRight") left += 20;
+    if (left < 0) left = 0;
+    if (left > 350) left = 350;
+    player.style.left = left + "px";
+});
+
+// Swipe controls
+let touchStartX = 0;
+document.addEventListener("touchstart", e => {
+    touchStartX = e.touches[0].clientX;
+});
+document.addEventListener("touchmove", e => {
+    if (!running || paused) return;
+    const touchX = e.touches[0].clientX;
+    let diff = touchX - touchStartX;
+    let left = parseFloat(player.style.left) + diff;
+    if (left < 0) left = 0;
+    if (left > 350) left = 350;
+    player.style.left = left + "px";
+    touchStartX = touchX;
+});
+
+// Main loop
+function gameLoop() {
+    if (!running || paused) return;
+    moveObstacles();
+    moveCoins();
+}
+
+// Create block
+function createObstacle() {
+    if (!running || paused) return;
+
+    const block = document.createElement("div");
+    block.className = "block";
+
+    let left = Math.random() * 300;
+    while (coins.some(c => Math.abs(parseFloat(c.style.left) - left) < 40)) {
+        left = Math.random() * 300;
+    }
+    block.style.left = left + "px";
+    block.style.top = "-30px";
+
+    game.appendChild(block);
+    obstacles.push(block);
+}
+
+// Create coin
+function createCoin() {
+    if (!running || paused) return;
+
+    const coin = document.createElement("div");
+    coin.className = "coin";
+
+    let left = Math.random() * 380;
+    while (obstacles.some(o => Math.abs(parseFloat(o.style.left) - left) < 50)) {
+        left = Math.random() * 380;
+    }
+    coin.style.left = left + "px";
+    coin.style.top = "-20px";
+
+    game.appendChild(coin);
+    coins.push(coin);
+}
+
+// Move blocks
+function moveObstacles() {
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        const obs = obstacles[i];
+        let top = parseFloat(obs.style.top) + speed;
+        obs.style.top = top + "px";
+
+        const obsLeft = parseFloat(obs.style.left);
+        const obsRight = obsLeft + obs.offsetWidth;
+        const obsBottom = top + obs.offsetHeight;
+
+        const pLeft = parseFloat(player.style.left);
+        const pRight = pLeft + player.offsetWidth;
+        const pTop = player.offsetTop;
+        const pBottom = pTop + player.offsetHeight;
+
+        if (pRight > obsLeft && pLeft < obsRight && pBottom > top && pTop < obsBottom) {
+            endGame();
+            return;
+        }
+        if (top > game.offsetHeight) {
+            obs.remove();
+            obstacles.splice(i, 1);
+        }
+    }
+}
+
+// Move coins
+function moveCoins() {
+    const coinPenalty = level * 3;
+
+    for (let i = coins.length - 1; i >= 0; i--) {
+        const coin = coins[i];
+        let top = parseFloat(coin.style.top) + speed;
+        coin.style.top = top + "px";
+
+        const cLeft = parseFloat(coin.style.left);
+        const cRight = cLeft + coin.offsetWidth;
+        const cBottom = top + coin.offsetHeight;
+
+        const pLeft = parseFloat(player.style.left);
+        const pRight = pLeft + player.offsetWidth;
+        const pTop = player.offsetTop;
+        const pBottom = pTop + player.offsetHeight;
+
+        if (pRight > cLeft && pLeft < cRight && pBottom > top && pTop < cBottom) {
+            score += 5;
+            updateUI();
+            playSound(1000, 0.1);
+            coin.remove();
+            coins.splice(i, 1);
+            continue;
+        }
+
+        if (top > game.offsetHeight) {
+            score -= coinPenalty;
+            updateUI();
+            coin.remove();
+            coins.splice(i, 1);
+
+            if (score < 0) endGame();
+        }
+    }
+}
+
+// Show popup
+function showPopup(text, isGameOver=false) {
+    popup.innerText = text;
+    popup.style.display = "block";
+    setTimeout(() => {
+        popup.style.display = "none";
+        if (isGameOver) {
+            game.style.display = "none";
+            menu.style.display = "flex";
+        }
+    }, 2000);
+}
+
+// Simple generated sound
+function playSound(frequency, duration) {
+    if (!soundOn) return;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+    oscillator.connect(audioCtx.destination);
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + duration);
+}
+
+function playClickSound() {
+    if (!soundOn) return;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.type = "square";       // more "clicky"
+    oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime); // high pitch
+    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.05); // very short = click
 }
