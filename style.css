@@ -1,148 +1,111 @@
-body {
+* {
     margin: 0;
-    background: black;
+    padding: 0;
+    box-sizing: border-box;
+    touch-action: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
     font-family: Arial, sans-serif;
 }
 
 /* MENU */
 #menu {
-    position: fixed;
-    inset: 0;
+    width: 100vw;
+    height: 100vh;
     background: #1a1a1a;
-    color: white;
+    color: #fff;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-#menu h1 {
+#gameTitle {
     font-size: 60px;
     color: #ff4d4d;
     margin-bottom: 40px;
+    text-shadow: 2px 2px #000;
 }
 
 #menu button {
-    padding: 15px 40px;
-    font-size: 24px;
+    padding: 15px 50px;
+    font-size: 22px;
+    margin: 10px;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
-    margin-bottom: 20px;
+}
+
+#startBtn {
+    background: #ff4d4d;
+    color: #fff;
+}
+
+#soundBtn {
+    background: #4da6ff;
+    color: #fff;
+}
+
+.scoreBox {
+    margin-top: 30px;
+    font-size: 20px;
+    text-align: center;
 }
 
 /* GAME AREA */
 #game {
     display: none;
     position: relative;
-    width: 400px;
-    height: 600px;
-    margin: 40px auto;
+    width: 100vw;
+    height: 100vh;
     background: #222;
     overflow: hidden;
-    border: 2px solid #444;
 }
 
-/* UI BAR */
-#ui {
+/* HUD */
+#hud {
     position: absolute;
-    top: 5px;
-    left: 5px;
-    right: 5px;
+    top: 10px;
+    width: 100%;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: white;
-    font-size: 18px;
+    justify-content: space-around;
+    color: #fff;
     z-index: 10;
 }
 
 #pauseBtn {
-    padding: 5px 12px;
-    cursor: pointer;
+    padding: 5px 15px;
 }
 
 /* PLAYER */
 #player {
     position: absolute;
+    bottom: 20px;
+    left: 175px;
     width: 50px;
     height: 50px;
     background: red;
-    bottom: 20px;
-    left: 175px;
     border-radius: 50%;
 }
 
-/* BLOCK */
+/* BLOCKS */
 .block {
     position: absolute;
-    width: 100px;
-    height: 30px;
-    background: #666;
+    width: 50px;
+    height: 50px;
+    background: #555;
 }
 
-/* COIN */
+/* COINS */
 .coin {
     position: absolute;
     width: 20px;
     height: 20px;
     background: gold;
     border-radius: 50%;
-}
-/* PROFESSIONAL MENU BOX */
-#menu {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at top, #2a2a2a, #000);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#menuBox {
-    background: rgba(20, 20, 20, 0.9);
-    padding: 50px 70px;
-    border-radius: 20px;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
-    text-align: center;
-}
-
-#gameTitle {
-    font-size: 64px;
-    color: #ff4d4d;
-    margin-bottom: 40px;
-    text-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
-}
-
-.menuBtn {
-    width: 220px;
-    padding: 15px 0;
-    font-size: 22px;
-    margin-bottom: 20px;
-    cursor: pointer;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(#ff4d4d, #cc0000);
-    color: white;
-    box-shadow: 0 5px #660000;
-    transition: all 0.15s ease;
-}
-
-.menuBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 7px #660000;
-}
-
-.menuBtn:active {
-    transform: translateY(2px);
-    box-shadow: 0 3px #660000;
-}
-
-.menuBtn.sound {
-    background: linear-gradient(#4da6ff, #005c99);
-    box-shadow: 0 5px #003d66;
-}
-
-#scorePanel {
-    margin-top: 30px;
-    font-size: 20px;
-    color: #ddd;
 }
