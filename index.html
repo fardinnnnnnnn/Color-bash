@@ -1,35 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Color Bash</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Color Bash</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div id="menu">
-    <div id="menuBox">
-        <h1 id="gameTitle">Color Bash</h1>
-
-        <button id="startBtn" class="menuBtn">Start Game</button>
-
-        <button id="soundBtn" class="menuBtn sound">Sound: ON</button>
-
-        <div id="scorePanel">
-            <p id="recentScore">Last Score: 0</p>
-            <p id="highScore">High Score: 0</p>
-        </div>
-    </div>
+<div id="menu" class="show">
+    <h1>Color Bash</h1>
+    <p id="recentScore">Last Score: 0</p>
+    <p id="highScore">High Score: 0</p>
+    <button id="startBtn">Start Game</button>
+    <button id="soundBtn">Sound: ON</button>
 </div>
 
-
-<div id="game">
-    <!-- UI BAR -->h
-    <div id="ui">
+<div id="game" class="hide">
+    <div id="hud">
         <span id="scoreText">Score: 0</span>
         <span id="levelText">Level: 1</span>
         <button id="pauseBtn">Pause</button>
     </div>
-
     <div id="player"></div>
 </div>
 
