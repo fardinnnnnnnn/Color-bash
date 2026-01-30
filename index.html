@@ -3,14 +3,24 @@
 <head>
     <meta charset="UTF-8">
 
-    <!-- IMPORTANT FOR MOBILE FULLSCREEN -->
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- CRITICAL FOR MOBILE FULLSCREEN -->
+    <meta name="viewport"
+          content="width=device-width,
+                   height=device-height,
+                   initial-scale=1.0,
+                   maximum-scale=1.0,
+                   user-scalable=no,
+                   viewport-fit=cover">
+
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <title>Color Bash</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <!-- MENU -->
@@ -20,7 +30,7 @@
     <button id="startBtn">Start Game</button>
     <button id="soundBtn">Sound: ON</button>
 
-    <div class="scoreBox">
+    <div class="scores">
         <p id="recentScore">Last Score: 0</p>
         <p id="highScore">High Score: 0</p>
     </div>
