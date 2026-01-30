@@ -1,30 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+
+    <!-- IMPORTANT FOR MOBILE FULLSCREEN -->
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
     <title>Color Bash</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<!-- MENU -->
 <div id="menu">
-    <div id="menuBox">
-        <h1 id="gameTitle">Color Bash</h1>
+    <h1 id="gameTitle">Color Bash</h1>
 
-        <button id="startBtn" class="menuBtn">Start Game</button>
+    <button id="startBtn">Start Game</button>
+    <button id="soundBtn">Sound: ON</button>
 
-        <button id="soundBtn" class="menuBtn sound">Sound: ON</button>
-
-        <div id="scorePanel">
-            <p id="recentScore">Last Score: 0</p>
-            <p id="highScore">High Score: 0</p>
-        </div>
+    <div class="scoreBox">
+        <p id="recentScore">Last Score: 0</p>
+        <p id="highScore">High Score: 0</p>
     </div>
 </div>
 
-
+<!-- GAME -->
 <div id="game">
-    <!-- UI BAR -->h
-    <div id="ui">
+    <div id="hud">
         <span id="scoreText">Score: 0</span>
         <span id="levelText">Level: 1</span>
         <button id="pauseBtn">Pause</button>
